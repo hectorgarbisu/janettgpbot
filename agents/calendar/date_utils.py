@@ -19,7 +19,9 @@ written_month_day_indices = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 
 
 class DateTuple():
     """ 
-    Statefull representation of a date 
+    Statefull representation of a date to handle incremental change
+    for example: 11 feb 2019 -> 30 May 2019 might first set the day to 30
+    and then the month to may. 30 feb is not a valid date, but a valid temporal DateTuple
     """
     def __init__(self, date = datetime.date.today()):
         self.day = date.day
