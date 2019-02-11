@@ -13,10 +13,65 @@ cardinal_month_day = [str(x+1) for x in range(31)]
 written_month_day = u"""uno primero dos segundo tres tercero cuatro cuarto cinco quinto seis sexto
 siete séptimo septimo ocho octavo nueve noveno diez décimo decimo once undécimo decimoprimero decimoprimer
 doce duodécimo decimosegundo trece catorce quince dieciséis dieciseis diecisiete dieciocho diecinueve veinte
-veintiuno veintidos veintitres veinticuatro veinticinco veintiseis veintisiete veintiocho veintinueve treinta""".split()
+veintiuno veintidos veintitres veinticuatro veinticinco veintiseis veintisiete veintiocho veintinueve treinta treintayuno""".split()
 written_month_day_indices = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 13,
-                             14, 15, 16, 16] + [a for a in range(17, 31)]
+                             14, 15, 16, 16] + [a for a in range(17, 32)]
 
+class DateTuple():
+    """ 
+    Statefull representation of a date 
+    """
+    def __init__(self, date = datetime.date.today()):
+        self.day = date.day
+        self.month = date.month
+        self.year = date.year
+
+    def __add__(self, other):
+        if type(other) is datetime.timedelta:
+            diff = other
+        elif type(other) is int:
+            diff = datetime.timedelta(days = other)
+        date = self.as_date() + diff
+        self._set(date)
+
+    def _set(self, date):
+        self.day = date.day
+        self.month = date.month
+        self.year = date.year
+
+    def as_date(self):
+        return datetime.date(self.year, self.month, self.day)
+
+    def set_month(self, token):
+        self.month = parse_month(token)
+
+    def set_day(self, token):
+        self.day = parse_day(token)
+
+    def set_year(self, token):
+        self.year = int(token)
+
+    def set_date(self, date):
+        if type(date) == str:
+            date = str_to_date(date)
+        elif type(date) == datetime.date:
+            self._set(date)
+    
+    def set_this_weekday(self, weekday):
+        date = this_weekday_to_date(weekday)
+        self._set(date)
+
+    def set_next_weekday(self, weekday):
+        date = DateTuple(next_weekday_to_date(weekday))
+        self._set(date)
+
+    def add_months(self, months):
+        as_date = self.as_date()
+        new_date = add_months(as_date, months)
+        self._set(new_date)
+
+def today_tuple():
+    return DateTuple()
 
 def next_weekday_to_date(string):
     twd = this_weekday_to_date(string)
@@ -45,6 +100,17 @@ def add_months(prev_date, num):
     return new_date
 
 
+def parse_month(string):
+    tkn = re.sub('[^a-zA-Z0-9-_*.]', '', string).lstrip("0")
+    month = dict(zip(months + cardinal_month,
+                     month_indices + cardinal_month))[tkn]
+    return int(month)
+
+def parse_day(string):
+    day_idx = dict(zip(written_month_day+cardinal_month_day,
+                       written_month_day_indices+cardinal_month_day))[string.lstrip("0")]
+    return int(day_idx)
+
 def this_weekday_to_date(string):
     today = datetime.date.today()
     day_idx = dict(zip(week_day, week_day_indices))[string.lstrip("0")]
@@ -54,17 +120,11 @@ def this_weekday_to_date(string):
 
 
 def update_month(prev_date, token):
-    tkn = re.sub('[^a-zA-Z0-9-_*.]', '', token).lstrip("0")
-    month = dict(zip(months + cardinal_month,
-                     month_indices + cardinal_month))[tkn]
-    return datetime.date(prev_date.year, int(month), prev_date.day)
+    return datetime.date(prev_date.year, parse_month(token), prev_date.day)
 
 
-def update_month_day(date, string):
-    today = datetime.date.today()
-    day_idx = dict(zip(written_month_day+cardinal_month_day,
-                       written_month_day_indices+cardinal_month_day))[string.lstrip("0")]
-    return datetime.date(today.year, today.month, int(day_idx))
+def update_month_day(date, token):
+    return datetime.date(date.year, date.month, parse_day(token))
 
 def is_month(token):
     return re.sub('[^a-zA-Z0-9-_*.]', '', token) in months or token.lstrip("0") in [str(x) for x in range(1, 13)]
