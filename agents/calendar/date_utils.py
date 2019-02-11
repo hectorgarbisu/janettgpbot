@@ -9,13 +9,13 @@ month_indices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12]
 cardinal_month = [str(x+1) for x in range(12)]
 week_day = u"lunes martes miercoles miércoles jueves viernes sabado sábado domingo".split()
 week_day_indices = [0, 1, 2, 2, 3, 4, 5, 5, 6]
-cardinal_month_day = [str(x+1) for x in range(31)]
+cardinal_month_day = [str(x+1) for x in range(32)]
 written_month_day = u"""uno primero dos segundo tres tercero cuatro cuarto cinco quinto seis sexto
 siete séptimo septimo ocho octavo nueve noveno diez décimo decimo once undécimo decimoprimero decimoprimer
 doce duodécimo decimosegundo trece catorce quince dieciséis dieciseis diecisiete dieciocho diecinueve veinte
-veintiuno veintidos veintitres veinticuatro veinticinco veintiseis veintisiete veintiocho veintinueve treinta""".split()
+veintiuno veintidos veintitres veinticuatro veinticinco veintiseis veintisiete veintiocho veintinueve treinta treintayuno""".split()
 written_month_day_indices = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 11, 11, 11, 12, 12, 12, 13,
-                             14, 15, 16, 16] + [a for a in range(17, 31)]
+                             14, 15, 16, 16] + [a for a in range(17, 32)]
 
 
 def next_weekday_to_date(string):

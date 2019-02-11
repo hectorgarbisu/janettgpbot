@@ -4,6 +4,7 @@
 import sys
 import datetime
 from . import date_utils as du
+from collections import namedtuple 
 
 class StateMachine(object):
     """ Previous state is used to allow dates so that
@@ -11,14 +12,18 @@ class StateMachine(object):
      a larger date such as "el jueves de la semana que viene" 
     """
     def __init__(self):
+        self.datetuple =  namedtuple("Date", 'year month day')
         self.date = datetime.date.today()
+        self.temp_date = self.datetuple(year = self.date.year,
+                                    month = self.date.month,
+                                    day = self.date.year)
         self.current_state = "S0"
         self.previous_state = "S0"
         self.terminal_states = "SF SM4 SM5 SM_2 S5_2_1 S8 S13 S2 S3 S4 S5 S6 SM7".split()
 
     def transit(self, token):
         self.previous_state = self.current_state
-        self.current_state = eval("self."+self.current_state)(token)
+        self.current_state = eval("self." + self.current_state)(token)
 
     def is_terminal(self):
         return (self.previous_state in self.terminal_states
@@ -39,7 +44,7 @@ class StateMachine(object):
         if token == "pasado":
             return "S13"
         if du.is_month_day(token):
-            self.date = du.update_month_day(self.date, token)
+            self.temp_date = self.datetuple(self.temp_date.year, self.temp_date.month, int(token))
             return "S11"
         if du.is_date(token):
             self.date = du.str_to_date(token)
@@ -58,12 +63,14 @@ class StateMachine(object):
             self.date = du.next_weekday_to_date(token)
             return "S2"
         if du.is_month_day(token):
+            self.temp_date = self.datetuple(self.temp_date.year, self.temp_date.month, int(token))
             return "S3"
         return "S0"
 
     # el próximo martes _
     def S2(self, token):
         if du.is_month_day(token):
+            self.temp_date = self.datetuple(self.temp_date.year, self.temp_date.month, int(token))
             return "S3"
         return "S0"
 
@@ -86,13 +93,14 @@ class StateMachine(object):
         if token == "que":
             return "S5_4"
         if du.is_month_day(token):
-            self.date = du.update_month_day(self.date, token)
+            self.temp_date = self.datetuple(self.temp_date.year, self.temp_date.month, int(token))
             return "S4"
         if du.is_date(token):
             self.date = du.str_to_date(token)
             return "SF"
         return "S0"
 
+    # _ semana que viene 
     def S5_1(self, token):
         if token == "esta":
             return "S5_2_1"
@@ -113,17 +121,18 @@ class StateMachine(object):
             return "S5_4"
         return "S0"
 
+    # esta/la semana que _
     def S5_4(self, token):  # de la semana que viene, el domingo que viene
         if token == "viene":
             return "S6"
         return "S0"
-    # la semana que viene _
 
+    # la semana que viene _
     def S6(self, token):
         self.date = self.date + datetime.timedelta(days=7)
         return "S0"
+    
     # el|este _
-
     def S7(self, token):
         if token in [u"día", "dia"]:
             return "S7"
@@ -131,7 +140,7 @@ class StateMachine(object):
             self.date = du.str_to_date(token)
             return "SF"
         if du.is_month_day(token):
-            self.date = du.update_month_day(self.date, token)
+            self.temp_date = self.datetuple(self.temp_date.year, self.temp_date.month, int(token))
             return "S4"
         if token in [u"próximo", "proximo"]:
             return "S1"
@@ -145,17 +154,17 @@ class StateMachine(object):
     # dd/mm/yyyy
     def SF(self, token):
         return "S0"
+    
     # 11 _
-
     def S11(self, token):
         if token == "de":
             return "S11_1"
         return "S0"
+    
     # 11 de _
-
     def S11_1(self, token):
         if du.is_month(token):
-            self.date = du.update_month(self.date, token)
+            self.temp_date = self.datetuple(self.temp_date.year, int(token), self.temp_date.day)
             return "SM4"
         return "S0"
 
@@ -174,17 +183,19 @@ class StateMachine(object):
     # el día cuatro de _
     def SM(self, token):
         if du.is_month(token):
-            self.date = du.update_month(self.date, token)
+            self.temp_date = self.datetuple(self.temp_date.year, int(token), self.temp_date.day)
             return "SM4"
         if token == "mes":
             return "SM_1"
         return "S0"
 
+    # del mes _
     def SM_1(self, token):
         if token == "que":
             return "SM_2"
         return "S0"
-
+    
+    # del mes que viene _
     def SM_2(self, token):
         if token == "viene":
             self.date = du.add_months(self.date, 1)
@@ -195,12 +206,13 @@ class StateMachine(object):
     def SM4(self, token):
         if token in ["de", "del"]:
             return "SM5"
+        self.date = datetime.date(*self.temp_date) 
         return "S0"
-    # el 3 del 01 del _
 
+    # el 3 del 01 del _
     def SM5(self, token):
         if du.is_year(token):
-            self.date = du.update_year(self.date, token)
+            self.date = datetime.date(*self.temp_date)
         return "S0"
 
 

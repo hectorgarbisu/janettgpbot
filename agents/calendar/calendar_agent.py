@@ -149,6 +149,7 @@ class CalendarAgent(object):
         (date, trace) = get_date(msg)
         if not date:
             return
+        print(trace)
         msg_id = update.message.message_id
         self.temp_date_dicts[chat_id][msg_id] = (msg, date)
         reply_markup = InlineKeyboardMarkup(
