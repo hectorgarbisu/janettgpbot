@@ -11,7 +11,6 @@ def start(bot, update):
 
 def add_handlers(dp, agent):
     handlers = agent.handlers()
-    #print(handlers)
     for handler in handlers:
         dp.add_handler(handler)
 
