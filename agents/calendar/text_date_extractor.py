@@ -133,10 +133,10 @@ class StateMachine(object):
         if token in [u"día", "dia"]:
             return "S7"
         if du.is_date(token):
-            self.date = du.str_to_date(token)
+            self.date = du.DateTuple(du.str_to_date(token))
             return "SF"
         if du.is_month_day(token):
-            self.date.set_month(token) # = du.update_month_day(self.date, token)
+            self.date.set_day(token) # = du.update_month_day(self.date, token)
             return "S4"
         if token in [u"próximo", "proximo"]:
             return "S1"

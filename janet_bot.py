@@ -25,7 +25,7 @@ def main():
     logger = logging.getLogger(__name__)
 
     with open('./data/apikey', 'r') as apikey_file:
-        TOKEN = apikey_file.read()
+        TOKEN = apikey_file.read().strip()
 
     updater = Updater(TOKEN)
 

@@ -33,8 +33,7 @@ class DateTuple():
             diff = other
         elif type(other) is int:
             diff = datetime.timedelta(days = other)
-        date = self.as_date() + diff
-        self._set(date)
+        return DateTuple(self.as_date() + diff)
 
     def _set(self, date):
         self.day = date.day
