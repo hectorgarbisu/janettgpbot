@@ -14,6 +14,13 @@ def add_handlers(dp, agent):
     for handler in handlers:
         dp.add_handler(handler)
 
+def _help(dp, update):
+    update.message.reply_text('Current agents: ' + ' '.join(type(agent).__name__ for agent in agents))
+    for agent in agents:
+        message = getattr(agent, 'command_list')
+        if message:
+            update.message.reply_text(message)
+
 def main():
     """Start the bot."""
     # Create the EventHandler and pass it your bot's token.
@@ -38,19 +45,8 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
 
-    """
-    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("help", _help))
 
-    # on noncommand i.e message - echo the message on Telegram
-    # dp.add_handler(MessageHandler(Filters.text, echo))
-    dp.add_handler(MessageHandler(Filters.text, texto))
-
-    # Button handler
-    dp.add_handler(CallbackQueryHandler(button))
-
-    # log all errors
-    dp.add_error_handler(error)
-    """
 
     # Start the Bot
     updater.start_polling()

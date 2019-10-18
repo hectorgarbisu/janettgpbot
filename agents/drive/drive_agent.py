@@ -8,22 +8,14 @@ import logging
 
 class DriveAgent:
 
+
     def __init__(self):
         self.drive = DriveUploader()
         self.drive.auth()
         with open('./data/folder_id', 'r') as folder_id_file:
-            FOLDER_ID = folder_id_file.read()
+            FOLDER_ID = folder_id_file.read().strip()
         self.drive.set_folder(FOLDER_ID)
 
-
-    def help(self, bot, update):
-        """Send a message when the command /help is issued."""
-        update.message.reply_text('Lista de comandos:\n' + command_list)
-
-
-    def echo(self, bot, update):
-        """Echo the user message."""
-        update.message.reply_text(update.message.text)
 
     def upload_named_file(self, bot, update, file_id, file_name):
         newFile = bot.get_file(file_id)
@@ -31,6 +23,7 @@ class DriveAgent:
         self.drive.upload_file(file_name)
         update.message.reply_text(f'Uploaded {file_name}')
         os.remove(file_name)
+
 
     def upload_unnamed_file(self, bot, update, file_id, chronological_filename):
         file_name = ""
@@ -99,7 +92,6 @@ class DriveAgent:
 
     def handlers(self):
         return [
-            MessageHandler(Filters.text, self.echo),
             MessageHandler(Filters.document, self.document),
             MessageHandler(Filters.video, self.video),
             MessageHandler(Filters.audio, self.audio),

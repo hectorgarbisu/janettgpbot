@@ -11,7 +11,6 @@ class CalendarAgent(object):
         self.calendars = {}
         self.temp_date_dicts = {}
         self.command_list = "/start: no hace nada\n" +\
-            " /help: muestra esta lista\n" +\
             "/semana: muestra los eventos de esta semana\n"+\
             "/mes: muestra los eventos de este mes\n"+\
             "/dias X: muestra los eventos entre hoy y dentro de X días\n"+\
@@ -23,7 +22,7 @@ class CalendarAgent(object):
 
     def handlers(self):
         return [ 
-                CommandHandler("help", self.help),
+                CommandHandler("calendarhelp", self._help),
                 CommandHandler("semana", self.week),
                 CommandHandler("mes", self.month),
                 CommandHandler("todo", self.all),
@@ -127,9 +126,9 @@ class CalendarAgent(object):
 
 
 
-    def help(self, bot, update):
+    def _help(self, bot, update):
         """Send a message when the command /help is issued."""
-        update.message.reply_text('Lista de comandos:\n' + self.command_list)
+        update.message.reply_text('Comandos de calendario:\n' + self.command_list)
 
 
     def echo(self, bot, update):
