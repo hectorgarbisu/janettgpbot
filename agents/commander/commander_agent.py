@@ -4,14 +4,27 @@ import logging
 import urllib.request
 
 
+def validate(fn):
+    def wrapper(self, bot, update):
+        chat_id = str(update.message.chat_id)
+        if chat_id not in self.allowed_users:
+            return update.message.reply_text('User not allowed');
+        return fn(self, bot, update)
+    return wrapper
+
 class CommanderAgent:
     
-    def __init__(self):
+    def __init__(self, allowed_users_file='data/allowed_users.txt'):
+        self.allowed_users = self.allowed_users_from_file(allowed_users_file)
         self.command_list = '\n'.join([
             '/ip: show my ip',
             '/hi: says hi',
         ])
-            
+    
+    def allowed_users_from_file(self, allowed_users_file):
+        with open(allowed_users_file, 'r') as file:
+            user_ids = {line.strip() for line in file}
+            return user_ids
 
     def handlers(self):
         return [ 
@@ -28,6 +41,7 @@ class CommanderAgent:
         ''' Says hi '''
         update.message.reply_text('Hi!')
 
+    @validate
     def ip(self, bot, update):
         ''' Says my internet ip '''
         update.message.reply_text(self.request_ip())
@@ -37,5 +51,3 @@ class CommanderAgent:
             return urllib.request.urlopen('https://ident.me').read().decode('utf8')
         except error:
             return 'The ip is a lie! ' + str(error)
-
-    

@@ -4,15 +4,15 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import logging
 from agents import agents
 
-def start(bot, update):
-    """Send a message when the command /start is issued."""
-    chat_id = str(update.message.chat_id)
-    update.message.reply_text(f'Tu eres {chat_id}')
 
 def add_handlers(dp, agent):
     handlers = agent.handlers()
     for handler in handlers:
         dp.add_handler(handler)
+
+def _id(bot, update):
+    chat_id = str(update.message.chat_id)
+    update.message.reply_text(f'You are {chat_id}')
 
 def _help(dp, update):
     update.message.reply_text('Current agents: ' + ' '.join(type(agent).__name__ for agent in agents))
@@ -43,7 +43,7 @@ def main():
         add_handlers(dp, agent)
 
     # on different commands - answer in Telegram
-    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("id", _id))
 
     dp.add_handler(CommandHandler("help", _help))
 
