@@ -20,6 +20,8 @@ class CommanderAgent:
         self.command_list = '\n'.join([
             '/ip: show my ip',
             '/hi: says hi',
+            '/python <expr>: evaluates a python expresion "expr"'
+            '/py <expr>: same as /python <expr>'
         ])
     
     def allowed_users_from_file(self, allowed_users_file):
@@ -32,7 +34,7 @@ class CommanderAgent:
                 CommandHandler('commanderhelp', self._help),
                 CommandHandler('ip', self.ip),
                 CommandHandler('hi', self.hi),
-                CommandHandler('python', self.python, pass_args=True),
+                CommandHandler('py', self.python, pass_args=True),
             ]
 
     def _help(self, bot, update):
