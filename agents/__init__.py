@@ -4,5 +4,3 @@ from .remindme.remindme_agent import RemindmeAgent
 from .commander.commander_agent import CommanderAgent
 
 agents = [CalendarAgent(), CommanderAgent()]
-
-
