@@ -1,10 +1,10 @@
-from io import StringIO
+from io import StringIO, BytesIO
 import sys
+import urllib.request
+import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-import logging
-import urllib.request
-from agents.commander.tide_command.tides_from_harmonics import get_current_day_forecast
+from agents.commander.tide_command.tides_from_harmonics import wave_graph
 
 def restricted(fn):
     def wrapper(self, bot, update, *args, **kwargs):
@@ -62,6 +62,12 @@ class CommanderAgent:
             chunk = message[i: message_size +i]
             update.message.reply_text(chunk)
 
+    @staticmethod
+    def _bytes_from_image(image):
+        bio = BytesIO()
+        image.save(bio, 'PNG')
+        bio.seek(0)
+        return bio
 
     def allowed_users_from_file(self, allowed_users_file):
         with open(allowed_users_file, 'r') as file:
@@ -95,4 +101,4 @@ class CommanderAgent:
         ''' 
         Returns a representation of today's tides 
         '''
-        update.message.reply_text(str(get_current_day_forecast(150)))
+        update.message.reply_photo(self._bytes_from_image(wave_graph(150)))

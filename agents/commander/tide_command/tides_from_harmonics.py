@@ -1,6 +1,7 @@
 import time, datetime
 import math
 import os
+from PIL import Image, ImageDraw
 
 _script_dir = os.path.dirname(__file__)
 
@@ -57,3 +58,20 @@ def get_now_index():
     now_index = int((now.hour*60 + now.minute)/10)
     return now_index
 
+def wave_graph(number_of_10_minute_increments, width=1920, height=1080):
+    ds = dot_size = max(min(width, height), 100)//100
+    waves = get_current_day_forecast(150)
+    max_, min_ = max(waves), min(waves)
+    image = Image.new('RGB', (width, height), (38, 50, 56))
+    draw = ImageDraw.Draw(image)
+    for x_, y_ in enumerate(waves):
+        x = int(width*(0.1 +0.8*x_/number_of_10_minute_increments))
+        y = int(height*(0.9 -0.8*(y_ -min_)/(max_ -min_)))
+        draw.ellipse([x -ds, y -ds, x +ds, y +ds], fill=(100, 170, 200))
+
+    nowx = int(width*(0.1 + 0.8*get_now_index()/number_of_10_minute_increments))
+    nowy = int(height*(0.9 -0.8*(waves[get_now_index()] -min_)/(max_ -min_)))
+    draw.ellipse([nowx -4*ds, nowy -4*ds, nowx +4*ds, nowy +4*ds], fill=(100, 200, 170))
+
+    del draw
+    return image
