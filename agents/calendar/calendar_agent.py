@@ -13,6 +13,7 @@ class CalendarAgent(object):
         self.command_list = "/start: no hace nada\n" +\
             "/semana: muestra los eventos de esta semana\n"+\
             "/mes: muestra los eventos de este mes\n"+\
+            "/todo: muestra todos tus eventos\n"+\
             "/dias X: muestra los eventos entre hoy y dentro de X días\n"+\
             "/purgar_cola: elimina los eventos pendientes de confirmación\n"+\
             "/pendientes: muestra los eeventos almacenados sin confirmar\n"+\
