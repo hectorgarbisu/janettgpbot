@@ -40,14 +40,13 @@ class CommanderAgent:
     def _eval_expression(expression):
         '''
         Return either the value of the expression if no value
-        is found
+        is found or the stdout channel
         '''
         old_stdout = sys.stdout
         sys.stdout = mystdout = StringIO()
         return_value = str(eval(expression))
         printed_text = mystdout.getvalue()
         return f'{printed_text}\n>{return_value}'
-        sys.stdout = old_stdout
 
     @staticmethod
     def _request_ip():
